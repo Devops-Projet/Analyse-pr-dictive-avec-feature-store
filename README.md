@@ -7,8 +7,37 @@ Magasin centralisé de variables de machine learning, partagé par plusieurs mod
 
 ## État du projet
 
-En cours de construction : seuls le cadrage et l'initialisation du dépôt sont en place.
-La commande unique de relance sera documentée ici lorsque le pipeline existera.
+En cours de construction : le cadrage, les conteneurs et la génération des données sont en
+place. Le feature store, les modèles et les routes métier de l'API restent à réaliser.
+
+## Démarrage
+
+Prérequis : Docker avec Docker Compose, et `make`.
+
+```bash
+make all
+```
+
+Cette commande crée `.env` à partir de `.env.example`, démarre les services, attend qu'ils
+soient prêts, puis lance le pipeline avec `dvc repro`.
+
+| Commande | Rôle |
+|---|---|
+| `make up` / `make down` | Démarrer ou arrêter les services |
+| `make pipeline` | Relancer le pipeline DVC |
+| `make test` / `make lint` | Lancer les tests ou le lint |
+| `make lock` | Régénérer `requirements.lock` |
+
+| Service | Adresse |
+|---|---|
+| API | http://localhost:8000/health |
+| MLflow | http://localhost:5000 |
+
+## Données
+
+Le pipeline écrit dans `data/`, qui est ignoré par Git. Aucun remote DVC n'est configuré pour
+l'instant : les données synthétiques sont régénérées à l'identique par `dvc repro`, grâce à
+la seed de `params.yaml`.
 
 ## Documentation
 
