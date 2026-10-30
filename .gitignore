@@ -1,0 +1,33 @@
+# Secrets
+.env
+
+# Données et artefacts (suivis par DVC ou régénérés)
+/data/
+/mlruns/
+/mlartifacts/
+*.joblib
+*.pkl
+
+# DVC
+/.dvc/tmp/
+/.dvc/cache/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+build/
+dist/
+
+# Outils de test et de lint
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Éditeurs et système
+.vscode/
+.idea/
+.DS_Store
