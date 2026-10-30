@@ -12,6 +12,8 @@ RUN apt-get update \
 COPY --from=builder /opt/venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH" \
     PYTHONUNBUFFERED=1 \
-    HOME=/tmp
+    HOME=/tmp \
+    USER=pipeline \
+    LOGNAME=pipeline
 WORKDIR /app
 CMD ["dvc", "repro"]
