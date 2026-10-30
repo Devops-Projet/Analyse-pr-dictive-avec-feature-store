@@ -1,0 +1,20 @@
+stages:
+  generate:
+    cmd: python -m pipelines.generate_data
+    deps:
+      - pipelines/generate_data.py
+    params:
+      - seed
+      - data
+    outs:
+      - data/raw
+
+  validate:
+    cmd: python -m pipelines.validate_data
+    deps:
+      - pipelines/validate_data.py
+      - data/raw
+    params:
+      - data.date_reference
+    outs:
+      - data/interim/validation_report.json
