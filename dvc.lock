@@ -1,0 +1,43 @@
+schema: '2.0'
+stages:
+  generate:
+    cmd: python -m pipelines.generate_data
+    deps:
+    - path: pipelines/generate_data.py
+      hash: md5
+      md5: 20dadad2d469d19d7cfe7756e51d3ab2
+      size: 6729
+    params:
+      params.yaml:
+        data:
+          n_clients: 2000
+          date_reference: '2026-01-01'
+          historique_jours: 365
+          transactions_par_mois: 12
+        seed: 42
+    outs:
+    - path: data/raw
+      hash: md5
+      md5: f9fee09dd52d65e214260904db301448.dir
+      size: 22504013
+      nfiles: 6
+  validate:
+    cmd: python -m pipelines.validate_data
+    deps:
+    - path: data/raw
+      hash: md5
+      md5: f9fee09dd52d65e214260904db301448.dir
+      size: 22504013
+      nfiles: 6
+    - path: pipelines/validate_data.py
+      hash: md5
+      md5: a4a30e2088462cd6cf92fc0d6bfb6c8d
+      size: 4681
+    params:
+      params.yaml:
+        data.date_reference: '2026-01-01'
+    outs:
+    - path: data/interim/validation_report.json
+      hash: md5
+      md5: 1d93a062429ac1e347c71c5df382186c
+      size: 190

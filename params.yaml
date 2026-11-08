@@ -1,0 +1,7 @@
+seed: 42
+
+data:
+  n_clients: 2000
+  date_reference: "2026-01-01"
+  historique_jours: 365
+  transactions_par_mois: 12
