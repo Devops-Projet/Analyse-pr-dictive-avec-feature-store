@@ -1,8 +1,11 @@
 from fastapi import FastAPI
 
-app = FastAPI(title="Feature store bancaire")
+from api.routers import features, health
 
-
-@app.get("/health")
-def health() -> dict[str, str]:
-    return {"status": "ok"}
+app = FastAPI(
+    title="Feature store bancaire",
+    description="Récupération des variables partagées par les modèles de la banque.",
+    version="0.1.0",
+)
+app.include_router(health.router)
+app.include_router(features.router)
