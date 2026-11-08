@@ -19,6 +19,7 @@ pipeline: setup
 	docker compose run --rm --build pipeline
 
 test: setup
+	docker compose up -d --wait postgres
 	docker compose run --rm --no-deps --build pipeline python -m pytest
 
 lint: setup
