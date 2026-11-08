@@ -7,8 +7,8 @@ Magasin centralisé de variables de machine learning, partagé par plusieurs mod
 
 ## État du projet
 
-En cours de construction : le cadrage, les conteneurs et la génération des données sont en
-place. Le feature store, les modèles et les routes métier de l'API restent à réaliser.
+En cours de construction : le cadrage, les conteneurs, la génération des données et le
+feature store sont en place. Les modèles et les routes de prédiction restent à réaliser.
 
 ## Démarrage
 
@@ -33,6 +33,12 @@ soient prêts, puis lance le pipeline avec `dvc repro`.
 | API | http://localhost:8000/health |
 | MLflow | http://localhost:5000 |
 
+## Pipeline
+
+`dvc repro` enchaîne `generate → validate → build_features → load_features`. La dernière étape
+charge les variables dans PostgreSQL et est relancée à chaque exécution, car DVC ne suit pas le
+contenu de la base.
+
 ## Données
 
 Le pipeline écrit dans `data/`, qui est ignoré par Git. Aucun remote DVC n'est configuré pour
@@ -43,4 +49,5 @@ la seed de `params.yaml`.
 
 - [Cadrage](docs/cadrage.md)
 - [Variables partagées](docs/variables.md)
+- [Catalogue des variables](docs/feature_catalog.md)
 - [Conventions de contribution](CONTRIBUTING.md)

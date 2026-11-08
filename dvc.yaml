@@ -18,3 +18,30 @@ stages:
       - data.date_reference
     outs:
       - data/interim/validation_report.json
+
+  build_features:
+    cmd: python -m pipelines.build_features
+    deps:
+      - pipelines/build_features.py
+      - feature_store/registry.py
+      - feature_store/transformations.py
+      - data/raw
+      - data/interim/validation_report.json
+    params:
+      - features
+    outs:
+      - data/features/features.csv
+
+  # Relancée à chaque "dvc repro" : la base PostgreSQL n'est pas suivie par DVC,
+  # elle doit être rechargée même si le fichier de variables n'a pas changé.
+  load_features:
+    cmd: python -m pipelines.load_features
+    always_changed: true
+    deps:
+      - pipelines/load_features.py
+      - feature_store/schema.sql
+      - feature_store/materialize.py
+      - data/features/features.csv
+    outs:
+      - data/features/load_receipt.json:
+          cache: false

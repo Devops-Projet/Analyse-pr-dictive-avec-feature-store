@@ -41,3 +41,64 @@ stages:
       hash: md5
       md5: 1d93a062429ac1e347c71c5df382186c
       size: 190
+  build_features:
+    cmd: python -m pipelines.build_features
+    deps:
+    - path: data/interim/validation_report.json
+      hash: md5
+      md5: 1d93a062429ac1e347c71c5df382186c
+      size: 190
+    - path: data/raw
+      hash: md5
+      md5: f9fee09dd52d65e214260904db301448.dir
+      size: 22504013
+      nfiles: 6
+    - path: feature_store/registry.py
+      hash: md5
+      md5: 4d16d15ec374bfdf966bfe3d918cf36c
+      size: 3822
+    - path: feature_store/transformations.py
+      hash: md5
+      md5: 09e5cfb3b801352ad66c3d3239ce1480
+      size: 5320
+    - path: pipelines/build_features.py
+      hash: md5
+      md5: 6eadce9a7b37da85b125a3b7efe0fab5
+      size: 867
+    params:
+      params.yaml:
+        features:
+          snapshots:
+          - '2025-10-01'
+          - '2025-11-01'
+          - '2025-12-01'
+          - '2026-01-01'
+    outs:
+    - path: data/features/features.csv
+      hash: md5
+      md5: 6df062c911ba3243ef03be561c66a2d0
+      size: 944576
+  load_features:
+    cmd: python -m pipelines.load_features
+    deps:
+    - path: data/features/features.csv
+      hash: md5
+      md5: 6df062c911ba3243ef03be561c66a2d0
+      size: 944576
+    - path: feature_store/materialize.py
+      hash: md5
+      md5: fc74acbc8699d57e082e358fbdc24592
+      size: 2477
+    - path: feature_store/schema.sql
+      hash: md5
+      md5: a45a7314961a49a3539b5ce4ddb95bf7
+      size: 1449
+    - path: pipelines/load_features.py
+      hash: md5
+      md5: d716e77e4391b5099cfdb7d6ab3b4091
+      size: 1017
+    outs:
+    - path: data/features/load_receipt.json
+      hash: md5
+      md5: 509b84705c010d6ed85fd98d38132d4f
+      size: 129

@@ -5,3 +5,6 @@ data:
   date_reference: "2026-01-01"
   historique_jours: 365
   transactions_par_mois: 12
+
+features:
+  snapshots: ["2025-10-01", "2025-11-01", "2025-12-01", "2026-01-01"]
