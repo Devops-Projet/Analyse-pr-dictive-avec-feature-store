@@ -20,7 +20,7 @@ services:
     build:
       context: .
       dockerfile: docker/Dockerfile.pipeline
-    image: bank-feature-store-pipeline
+    image: bank-feature-store-pipeline:${IMAGE_TAG:-latest}
     command: >
       mlflow server
       --host 0.0.0.0
@@ -50,7 +50,7 @@ services:
     build:
       context: .
       dockerfile: docker/Dockerfile.api
-    image: bank-feature-store-api
+    image: bank-feature-store-api:${IMAGE_TAG:-latest}
     env_file: .env
     ports:
       - "${API_PORT}:8000"
@@ -65,7 +65,7 @@ services:
     build:
       context: .
       dockerfile: docker/Dockerfile.pipeline
-    image: bank-feature-store-pipeline
+    image: bank-feature-store-pipeline:${IMAGE_TAG:-latest}
     profiles: ["pipeline"]
     env_file: .env
     user: "${UID:-1000}:${GID:-1000}"

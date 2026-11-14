@@ -1,7 +1,9 @@
-.PHONY: all setup up down pipeline test lint lock models rollback smoke
+.PHONY: all setup up down pipeline test lint audit lock models rollback smoke
 
 export UID := $(shell id -u)
 export GID := $(shell id -g)
+# Les images portent le hash du commit : chaque version déployée est identifiable.
+export IMAGE_TAG ?= $(shell git rev-parse --short HEAD 2>/dev/null || echo dev)
 
 all: up pipeline
 
@@ -42,6 +44,10 @@ test: setup
 lint: setup
 	docker compose run --rm --no-deps pipeline sh -c \
 		"ruff check . && black --check ."
+
+# Échoue si un mot de passe ou une clé est détecté dans les fichiers suivis par Git
+audit: setup
+	docker compose run --rm --no-deps pipeline python scripts/check_secrets.py  # pragma: allowlist secret
 
 # Régénère requirements.lock dans le même Python que les images
 lock:
