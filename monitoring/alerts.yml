@@ -1,0 +1,58 @@
+# Chaque alerte décrit un symptôme visible, son responsable et la procédure à suivre
+# (docs/runbook.md). Les seuils sont des points de départ à ajuster avec l'usage réel.
+groups:
+  - name: feature-store-api
+    rules:
+      - alert: APIInjoignable
+        expr: up{job="api"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          responsable: Abdessamad-PRO
+        annotations:
+          summary: "L'API ne répond plus aux collectes de métriques"
+          runbook: "docs/runbook.md#incidents-connus"
+
+      - alert: ServiceNonPret
+        expr: service_ready == 0
+        for: 2m
+        labels:
+          severity: critical
+          responsable: hichamouaouche
+        annotations:
+          summary: "Store non chargé ou modèle sans version en production"
+          runbook: "docs/runbook.md#incidents-connus"
+
+      - alert: TauxErreursEleve
+        expr: |
+          sum(rate(http_requests_total{status=~"5.."}[5m]))
+            / sum(rate(http_requests_total[5m])) > 0.05
+        for: 5m
+        labels:
+          severity: critical
+          responsable: Abdessamad-PRO
+        annotations:
+          summary: "Plus de 5 % des requêtes échouent (5xx)"
+          runbook: "docs/runbook.md#signaux-qui-imposent-un-arrêt"
+
+      - alert: LatencePredictionElevee
+        expr: |
+          histogram_quantile(0.95,
+            sum by (le) (rate(http_request_duration_seconds_bucket{route=~"/predict/.*"}[5m]))
+          ) > 0.5
+        for: 5m
+        labels:
+          severity: warning
+          responsable: Abdessamad-PRO
+        annotations:
+          summary: "95 % des prédictions prennent plus de 0,5 s"
+
+      - alert: VariablesPerimees
+        expr: feature_store_last_load_age_seconds > 7 * 24 * 3600
+        for: 10m
+        labels:
+          severity: warning
+          responsable: hichamouaouche
+        annotations:
+          summary: "Le store n'a pas été rechargé depuis plus de 7 jours"
+          runbook: "Relancer make pipeline"
