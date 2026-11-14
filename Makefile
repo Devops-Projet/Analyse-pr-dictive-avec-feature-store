@@ -1,4 +1,4 @@
-.PHONY: all setup up down pipeline test lint lock
+.PHONY: all setup up down pipeline test lint lock models rollback
 
 export UID := $(shell id -u)
 export GID := $(shell id -g)
@@ -15,8 +15,21 @@ up: setup
 down:
 	docker compose down
 
+# Si le registre MLflow a été vidé (docker compose down -v), DVC considère les modèles comme
+# à jour : on force alors leur réentraînement pour que l'API ait toujours un modèle à servir.
 pipeline: setup
-	docker compose run --rm --build pipeline
+	docker compose run --rm --build pipeline sh -c "dvc repro && \
+		(python -m models.common.registry check || \
+		dvc repro --force --single-item train_scoring train_marketing evaluate)"
+
+# État des alias production / previous de chaque modèle
+models: setup
+	docker compose run --rm pipeline sh -c "python -m models.common.registry status credit_scoring \
+		&& python -m models.common.registry status marketing_propensity"
+
+# Retour à la version précédente : make rollback MODEL=credit_scoring
+rollback: setup
+	docker compose run --rm pipeline python -m models.common.registry rollback $(MODEL)
 
 test: setup
 	docker compose up -d --wait postgres
