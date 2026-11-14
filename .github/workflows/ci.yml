@@ -1,0 +1,83 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PYTHON_VERSION: "3.12"
+
+jobs:
+  lint:
+    name: Lint et secrets
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+          cache-dependency-path: requirements.lock
+      - run: pip install -r requirements.lock
+      - name: Ruff
+        run: ruff check .
+      - name: Black
+        run: black --check .
+      - name: Recherche de secrets
+        run: python scripts/check_secrets.py
+
+  test:
+    name: Tests et validation des modèles
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: feature_store
+          POSTGRES_USER: feature_store
+          POSTGRES_PASSWORD: ci-only-password  # pragma: allowlist secret
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U feature_store"
+          --health-interval 5s --health-timeout 3s --health-retries 10
+    env:
+      POSTGRES_HOST: localhost
+      POSTGRES_PORT: "5432"
+      POSTGRES_DB: feature_store
+      POSTGRES_USER: feature_store
+      POSTGRES_PASSWORD: ci-only-password  # pragma: allowlist secret
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+          cache-dependency-path: requirements.lock
+      - run: pip install -r requirements.lock
+      - name: Tests unitaires et d'intégration
+        run: >-
+          python -m pytest tests/unit tests/integration
+          --cov=feature_store --cov=api --cov=models --cov=pipelines --cov-report=term
+      - name: Validation des modèles (seuils, sorties, valeurs manquantes)
+        run: python -m pytest tests/model -v
+
+  build:
+    name: Build des images
+    runs-on: ubuntu-latest
+    needs: [lint, test]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Image de l'API
+        run: docker build -f docker/Dockerfile.api -t bank-feature-store-api:${GITHUB_SHA::7} .
+      - name: Image du pipeline
+        run: docker build -f docker/Dockerfile.pipeline -t bank-feature-store-pipeline:${GITHUB_SHA::7} .
+      - name: Taille des images
+        run: docker images --format "{{.Repository}}:{{.Tag}} {{.Size}}" | grep bank-feature-store
