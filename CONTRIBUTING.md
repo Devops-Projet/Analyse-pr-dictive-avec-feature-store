@@ -20,7 +20,8 @@ Types utilisés : `feat`, `fix`, `docs`, `test`, `chore`, `ci`, `refactor`.
 ## Pull requests
 
 - Toute modification passe par une pull request vers `main`.
-- La pull request est relue par l'autre développeur avant la fusion.
+- La pull request est relue et approuvée par l'autre développeur avant la fusion.
+- Elle respecte la [définition de « terminé »](docs/user_stories.md#définition-de--terminé-).
 
 ## Secrets et données
 

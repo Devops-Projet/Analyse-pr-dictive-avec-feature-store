@@ -79,6 +79,7 @@ la seed de `params.yaml`.
 ## Documentation
 
 - [Cadrage](docs/cadrage.md)
+- [User stories et définition de « terminé »](docs/user_stories.md)
 - [Variables partagées](docs/variables.md)
 - [Catalogue des variables](docs/feature_catalog.md)
 - [Conventions de contribution](CONTRIBUTING.md)

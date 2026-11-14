@@ -5,6 +5,12 @@ from dataclasses import dataclass
 
 from sqlalchemy.engine import URL
 
+REQUIRED = ("POSTGRES_HOST", "POSTGRES_DB", "POSTGRES_USER", "POSTGRES_PASSWORD")
+
+
+class ConfigError(RuntimeError):
+    pass
+
 
 @dataclass(frozen=True)
 class Settings:
@@ -27,10 +33,21 @@ class Settings:
 
 
 def get_settings() -> Settings:
+    """Échoue immédiatement si une variable obligatoire manque, plutôt que de se connecter
+    avec une valeur vide et d'échouer plus loin avec un message trompeur."""
+    missing = [name for name in REQUIRED if not os.environ.get(name)]
+    if missing:
+        raise ConfigError(
+            f"Variables d'environnement manquantes : {', '.join(missing)}. "
+            "Copier .env.example vers .env et les renseigner."
+        )
+    port = os.environ.get("POSTGRES_PORT", "5432")
+    if not port.isdigit():
+        raise ConfigError(f"POSTGRES_PORT doit être un nombre, reçu : {port!r}")
     return Settings(
-        postgres_host=os.environ.get("POSTGRES_HOST", "localhost"),
-        postgres_port=int(os.environ.get("POSTGRES_PORT", "5432")),
-        postgres_db=os.environ.get("POSTGRES_DB", "feature_store"),
-        postgres_user=os.environ.get("POSTGRES_USER", "feature_store"),
-        postgres_password=os.environ.get("POSTGRES_PASSWORD", ""),
+        postgres_host=os.environ["POSTGRES_HOST"],
+        postgres_port=int(port),
+        postgres_db=os.environ["POSTGRES_DB"],
+        postgres_user=os.environ["POSTGRES_USER"],
+        postgres_password=os.environ["POSTGRES_PASSWORD"],
     )
