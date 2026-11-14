@@ -50,3 +50,22 @@ class FeatureSetVersion(BaseModel):
     n_entities: int
     n_values: int
     computed_at: datetime
+
+
+class PredictionRequest(BaseModel):
+    client_id: int = Field(gt=0)
+    as_of: datetime | None = Field(None, description="Date de lecture ; la plus récente si absente")
+
+    model_config = {"json_schema_extra": {"examples": [{"client_id": 42}]}}
+
+
+class PredictionResponse(BaseModel):
+    model_config = {"protected_namespaces": ()}
+
+    client_id: int
+    model: str
+    model_version: str
+    feature_set_version: str
+    event_timestamp: datetime = Field(description="Date de l'instantané de variables utilisé")
+    probability: float = Field(ge=0, le=1)
+    prediction: int = Field(description="1 si la probabilité atteint le seuil de 0,5")

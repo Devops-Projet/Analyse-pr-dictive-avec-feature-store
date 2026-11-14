@@ -7,7 +7,7 @@ VALID = {
     "POSTGRES_PORT": "5432",
     "POSTGRES_DB": "feature_store",
     "POSTGRES_USER": "feature_store",
-    "POSTGRES_PASSWORD": "secret",
+    "POSTGRES_PASSWORD": "secret",  # pragma: allowlist secret
 }
 
 

@@ -112,6 +112,8 @@ databricks-sdk==0.158.0
     # via
     #   mlflow-skinny
     #   mlflow-tracing
+detect-secrets==1.5.0
+    # via bank-feature-store (pyproject.toml)
 dictdiffer==0.10.0
     # via dvc-data
 diskcache==5.6.3
@@ -416,11 +418,13 @@ pytokens==0.4.1
 pyyaml==6.0.3
     # via
     #   bank-feature-store (pyproject.toml)
+    #   detect-secrets
     #   mlflow-skinny
     #   omegaconf
 requests==2.34.2
     # via
     #   databricks-sdk
+    #   detect-secrets
     #   docker
     #   dvc
     #   dvc-studio-client

@@ -1,22 +1,46 @@
-.PHONY: all setup up down pipeline test lint lock
+.PHONY: all setup up down pipeline test lint audit lock models rollback smoke monitoring
 
 export UID := $(shell id -u)
 export GID := $(shell id -g)
+# Les images portent le hash du commit : chaque version déployée est identifiable.
+export IMAGE_TAG ?= $(shell git rev-parse --short HEAD 2>/dev/null || echo dev)
 
 all: up pipeline
 
-# Crée .env à partir du modèle s'il n'existe pas encore
+# Crée .env à partir du modèle, puis y ajoute les variables apparues depuis dans .env.example
 setup:
-	test -f .env || cp .env.example .env
+	@test -f .env || cp .env.example .env
+	@python3 scripts/sync_env.py
 
 up: setup
 	docker compose up -d --build --wait
 
 down:
-	docker compose down
+	docker compose --profile monitoring down
 
+# Si le registre MLflow a été vidé (docker compose down -v), DVC considère les modèles comme
+# à jour : on force alors leur réentraînement pour que l'API ait toujours un modèle à servir.
 pipeline: setup
-	docker compose run --rm --build pipeline
+	docker compose run --rm --build pipeline sh -c "dvc repro && \
+		(python -m models.common.registry check || \
+		dvc repro --force --single-item train_scoring train_marketing evaluate)"
+
+# État des alias production / previous de chaque modèle
+models: setup
+	docker compose run --rm pipeline sh -c "python -m models.common.registry status credit_scoring \
+		&& python -m models.common.registry status marketing_propensity"
+
+# Retour à la version précédente : make rollback MODEL=credit_scoring
+rollback: setup
+	docker compose run --rm pipeline python -m models.common.registry rollback $(MODEL)
+
+# Prometheus (http://localhost:9090) et Grafana (http://localhost:3000)
+monitoring: setup
+	docker compose --profile monitoring up -d --build --wait
+
+# Contrôle après déploiement sur le service démarré (voir docs/runbook.md)
+smoke: setup
+	docker compose run --rm --no-deps -e API_URL=http://api:8000 pipeline python scripts/smoke_test.py
 
 test: setup
 	docker compose up -d --wait postgres
@@ -25,6 +49,10 @@ test: setup
 lint: setup
 	docker compose run --rm --no-deps pipeline sh -c \
 		"ruff check . && black --check ."
+
+# Échoue si un mot de passe ou une clé est détecté dans les fichiers suivis par Git
+audit: setup
+	docker compose run --rm --no-deps pipeline python scripts/check_secrets.py  # pragma: allowlist secret
 
 # Régénère requirements.lock dans le même Python que les images
 lock:

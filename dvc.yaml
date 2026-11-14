@@ -45,3 +45,66 @@ stages:
     outs:
       - data/features/load_receipt.json:
           cache: false
+
+  drift:
+    cmd: python -m monitoring.drift
+    deps:
+      - monitoring/drift.py
+      - data/features/features.csv
+    params:
+      - monitoring
+    metrics:
+      - reports/drift.json:
+          cache: false
+
+  # Les modèles lisent leurs variables dans PostgreSQL : le reçu de chargement
+  # représente l'état du store dont ils dépendent.
+  train_scoring:
+    cmd: python -m models.credit_scoring.train
+    deps:
+      - models/common
+      - models/credit_scoring/train.py
+      - data/features/load_receipt.json
+      - data/raw/clients.csv
+    params:
+      - seed
+      - models.label_date
+      - models.test_size
+      - models.scoring
+    outs:
+      - models/credit_scoring/last_run.json:
+          cache: false
+
+  train_marketing:
+    cmd: python -m models.marketing_propensity.train
+    deps:
+      - models/common
+      - models/marketing_propensity/train.py
+      - data/features/load_receipt.json
+      - data/raw/clients.csv
+    params:
+      - seed
+      - models.label_date
+      - models.test_size
+      - models.marketing
+    outs:
+      - models/marketing_propensity/last_run.json:
+          cache: false
+
+  evaluate:
+    cmd: >-
+      python -m models.credit_scoring.evaluate
+      && python -m models.marketing_propensity.evaluate
+    deps:
+      - models/credit_scoring/evaluate.py
+      - models/marketing_propensity/evaluate.py
+      - models/credit_scoring/last_run.json
+      - models/marketing_propensity/last_run.json
+    params:
+      - models.scoring.min_auc
+      - models.marketing.min_auc
+    metrics:
+      - reports/credit_scoring.json:
+          cache: false
+      - reports/marketing_propensity.json:
+          cache: false
