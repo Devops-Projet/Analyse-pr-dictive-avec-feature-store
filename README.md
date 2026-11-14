@@ -7,9 +7,8 @@ Magasin centralisé de variables de machine learning, partagé par plusieurs mod
 
 ## État du projet
 
-En cours de construction : le cadrage, les conteneurs, la génération des données et le
-feature store et son API de récupération sont en place. Les modèles et les routes de
-prédiction restent à réaliser.
+En cours de construction : les données, le feature store, son API de récupération et les deux
+modèles consommateurs sont en place. Les routes de prédiction restent à réaliser.
 
 ## Démarrage
 
@@ -66,9 +65,23 @@ inconnue, `422` pour une requête invalide.
 
 ## Pipeline
 
-`dvc repro` enchaîne `generate → validate → build_features → load_features`. La dernière étape
-charge les variables dans PostgreSQL et est relancée à chaque exécution, car DVC ne suit pas le
-contenu de la base.
+`dvc repro` enchaîne `generate → validate → build_features → load_features → train_scoring →
+train_marketing → evaluate`. `load_features` charge les variables dans PostgreSQL et est
+relancée à chaque exécution, car DVC ne suit pas le contenu de la base. Si le registre MLflow a
+été vidé, `make pipeline` réentraîne les modèles automatiquement.
+
+## Modèles
+
+Deux modèles lisent leurs variables dans le store et sont suivis dans MLflow
+(http://localhost:5000) : `credit_scoring` et `marketing_propensity`. Un modèle n'est mis en
+production que si son AUC dépasse un seuil minimal et celle de la version en production.
+
+| Commande | Rôle |
+|---|---|
+| `make models` | Versions en production et précédentes |
+| `make rollback MODEL=credit_scoring` | Remettre la version précédente en production |
+
+Voir [docs/modeles.md](docs/modeles.md) pour les modèles essayés et les résultats.
 
 ## Données
 
@@ -82,4 +95,5 @@ la seed de `params.yaml`.
 - [User stories et définition de « terminé »](docs/user_stories.md)
 - [Variables partagées](docs/variables.md)
 - [Catalogue des variables](docs/feature_catalog.md)
+- [Modèles](docs/modeles.md)
 - [Conventions de contribution](CONTRIBUTING.md)

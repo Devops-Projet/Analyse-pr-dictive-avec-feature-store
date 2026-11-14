@@ -8,3 +8,13 @@ data:
 
 features:
   snapshots: ["2025-10-01", "2025-11-01", "2025-12-01", "2026-01-01"]
+
+models:
+  label_date: "2026-01-01"
+  test_size: 0.25
+  scoring:
+    min_auc: 0.65
+    C: 0.05
+  marketing:
+    min_auc: 0.60
+    C: 0.05
