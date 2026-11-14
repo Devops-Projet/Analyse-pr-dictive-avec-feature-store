@@ -22,7 +22,7 @@ router = APIRouter(prefix="/features", tags=["features"])
 EngineDep = Annotated[Engine, Depends(get_engine)]
 
 
-def _naive_utc(value: datetime | None) -> datetime | None:
+def naive_utc(value: datetime | None) -> datetime | None:
     # Les dates du store sont stockées sans fuseau, en UTC.
     if value is None or value.tzinfo is None:
         return value
@@ -31,7 +31,7 @@ def _naive_utc(value: datetime | None) -> datetime | None:
 
 def _read(engine: Engine, client_ids, version, as_of, features):
     try:
-        return get_online_features(engine, client_ids, version, _naive_utc(as_of), features)
+        return get_online_features(engine, client_ids, version, naive_utc(as_of), features)
     except UnknownVersionError as e:
         raise HTTPException(status_code=404, detail=str(e)) from e
     except ValueError as e:
