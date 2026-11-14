@@ -1,4 +1,4 @@
-.PHONY: all setup up down pipeline test lint lock models rollback
+.PHONY: all setup up down pipeline test lint lock models rollback smoke
 
 export UID := $(shell id -u)
 export GID := $(shell id -g)
@@ -30,6 +30,10 @@ models: setup
 # Retour à la version précédente : make rollback MODEL=credit_scoring
 rollback: setup
 	docker compose run --rm pipeline python -m models.common.registry rollback $(MODEL)
+
+# Contrôle après déploiement sur le service démarré (voir docs/runbook.md)
+smoke: setup
+	docker compose run --rm --no-deps -e API_URL=http://api:8000 pipeline python scripts/smoke_test.py
 
 test: setup
 	docker compose up -d --wait postgres

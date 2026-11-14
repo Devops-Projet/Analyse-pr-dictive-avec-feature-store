@@ -8,7 +8,8 @@ Magasin centralisé de variables de machine learning, partagé par plusieurs mod
 ## État du projet
 
 En cours de construction : les données, le feature store, son API de récupération et les deux
-modèles consommateurs sont en place. Les routes de prédiction restent à réaliser.
+modèles consommateurs et leurs routes de prédiction sont en place. La CI et la supervision
+restent à réaliser.
 
 ## Démarrage
 
@@ -26,6 +27,7 @@ soient prêts, puis lance le pipeline avec `dvc repro`.
 | `make up` / `make down` | Démarrer ou arrêter les services |
 | `make pipeline` | Relancer le pipeline DVC |
 | `make test` / `make lint` | Lancer les tests ou le lint |
+| `make smoke` | Contrôler le service démarré |
 | `make lock` | Régénérer `requirements.lock` |
 
 | Service | Adresse |
@@ -63,6 +65,29 @@ curl -X POST http://localhost:8000/features/batch \
 Codes d'erreur : `404` pour un client ou une version inconnus, `400` pour une variable
 inconnue, `422` pour une requête invalide.
 
+## Prédiction
+
+| Route | Rôle |
+|---|---|
+| `POST /predict/scoring` | Probabilité de défaut d'un client |
+| `POST /predict/marketing` | Probabilité de souscription d'un client |
+
+L'API lit les variables du client dans la version du store sur laquelle le modèle a été
+entraîné, puis applique le modèle en production du registre MLflow.
+
+```bash
+curl -X POST http://localhost:8000/predict/scoring \
+  -H "content-type: application/json" -d '{"client_id": 42}'
+# {"client_id":42,"model":"credit_scoring","model_version":"1",
+#  "feature_set_version":"v-6df062c911ba","event_timestamp":"2026-01-01T00:00:00",
+#  "probability":0.5537,"prediction":1}
+```
+
+Codes d'erreur : `404` pour un client inconnu, `503` si aucun modèle n'est en production.
+
+Après chaque déploiement, `make smoke` vérifie le parcours réel. Le retour arrière et la
+conduite à tenir en cas d'incident sont décrits dans [docs/runbook.md](docs/runbook.md).
+
 ## Pipeline
 
 `dvc repro` enchaîne `generate → validate → build_features → load_features → train_scoring →
@@ -96,4 +121,5 @@ la seed de `params.yaml`.
 - [Variables partagées](docs/variables.md)
 - [Catalogue des variables](docs/feature_catalog.md)
 - [Modèles](docs/modeles.md)
+- [Procédures d'exploitation](docs/runbook.md)
 - [Conventions de contribution](CONTRIBUTING.md)
