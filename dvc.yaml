@@ -46,6 +46,17 @@ stages:
       - data/features/load_receipt.json:
           cache: false
 
+  drift:
+    cmd: python -m monitoring.drift
+    deps:
+      - monitoring/drift.py
+      - data/features/features.csv
+    params:
+      - monitoring
+    metrics:
+      - reports/drift.json:
+          cache: false
+
   # Les modèles lisent leurs variables dans PostgreSQL : le reçu de chargement
   # représente l'état du store dont ils dépendent.
   train_scoring:

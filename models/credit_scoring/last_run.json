@@ -1,7 +1,7 @@
 {
   "model": "credit_scoring",
-  "run_id": "2d4b8431162143dab7e0a87da01f0ff8",
-  "model_version": "1",
+  "run_id": "8418a64f6a404125874a585a0fff5d3b",
+  "model_version": "4",
   "feature_set_version": "v-6df062c911ba",
   "metrics": {
     "auc": 0.7354,

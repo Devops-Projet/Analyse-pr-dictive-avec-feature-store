@@ -1,0 +1,156 @@
+{
+  "reference_snapshot": "2025-10-01",
+  "current_snapshot": "2026-01-01",
+  "thresholds": {
+    "psi_warning": 0.1,
+    "psi_alert": 0.25,
+    "ks_pvalue": 0.01
+  },
+  "summary": {
+    "stable": 17,
+    "avertissement": 3,
+    "alerte": 0
+  },
+  "features": [
+    {
+      "feature": "age",
+      "psi": 0.0,
+      "ks_statistic": 0.0,
+      "ks_pvalue": 1.0,
+      "status": "stable"
+    },
+    {
+      "feature": "anciennete_mois",
+      "psi": 0.0056,
+      "ks_statistic": 0.0205,
+      "ks_pvalue": 0.7948,
+      "status": "stable"
+    },
+    {
+      "feature": "revenu_mensuel",
+      "psi": 0.0,
+      "ks_statistic": 0.0,
+      "ks_pvalue": 1.0,
+      "status": "stable"
+    },
+    {
+      "feature": "solde_moyen_30j",
+      "psi": 0.0308,
+      "ks_statistic": 0.0435,
+      "ks_pvalue": 0.0454,
+      "status": "stable"
+    },
+    {
+      "feature": "solde_moyen_90j",
+      "psi": 0.0344,
+      "ks_statistic": 0.045,
+      "ks_pvalue": 0.0348,
+      "status": "stable"
+    },
+    {
+      "feature": "solde_min_90j",
+      "psi": 0.0335,
+      "ks_statistic": 0.056,
+      "ks_pvalue": 0.0038,
+      "status": "avertissement"
+    },
+    {
+      "feature": "nb_transactions_30j",
+      "psi": 0.0061,
+      "ks_statistic": 0.0235,
+      "ks_pvalue": 0.6389,
+      "status": "stable"
+    },
+    {
+      "feature": "nb_transactions_90j",
+      "psi": 0.008,
+      "ks_statistic": 0.019,
+      "ks_pvalue": 0.8633,
+      "status": "stable"
+    },
+    {
+      "feature": "montant_debits_30j",
+      "psi": 0.0094,
+      "ks_statistic": 0.025,
+      "ks_pvalue": 0.5597,
+      "status": "stable"
+    },
+    {
+      "feature": "montant_credits_30j",
+      "psi": 0.0079,
+      "ks_statistic": 0.0275,
+      "ks_pvalue": 0.4361,
+      "status": "stable"
+    },
+    {
+      "feature": "ratio_debits_credits_30j",
+      "psi": 0.0059,
+      "ks_statistic": 0.0204,
+      "ks_pvalue": 0.7956,
+      "status": "stable"
+    },
+    {
+      "feature": "ratio_endettement",
+      "psi": 0.001,
+      "ks_statistic": 0.015,
+      "ks_pvalue": 0.9781,
+      "status": "stable"
+    },
+    {
+      "feature": "nb_credits_actifs",
+      "psi": 0.0013,
+      "ks_statistic": 0.015,
+      "ks_pvalue": 0.9781,
+      "status": "stable"
+    },
+    {
+      "feature": "nb_retards_paiement_12m",
+      "psi": 0.0522,
+      "ks_statistic": 0.08,
+      "ks_pvalue": 0.0,
+      "status": "avertissement"
+    },
+    {
+      "feature": "jours_retard_max_12m",
+      "psi": 0.0225,
+      "ks_statistic": 0.08,
+      "ks_pvalue": 0.0,
+      "status": "avertissement"
+    },
+    {
+      "feature": "nb_decouverts_90j",
+      "psi": 0.0106,
+      "ks_statistic": 0.0475,
+      "ks_pvalue": 0.0219,
+      "status": "stable"
+    },
+    {
+      "feature": "nb_produits_detenus",
+      "psi": 0.0,
+      "ks_statistic": 0.0,
+      "ks_pvalue": 1.0,
+      "status": "stable"
+    },
+    {
+      "feature": "utilise_app_mobile",
+      "psi": 0.0,
+      "ks_statistic": 0.0,
+      "ks_pvalue": 1.0,
+      "status": "stable"
+    },
+    {
+      "feature": "jours_depuis_derniere_transaction",
+      "psi": 0.007,
+      "ks_statistic": 0.0345,
+      "ks_pvalue": 0.1849,
+      "status": "stable"
+    },
+    {
+      "feature": "nb_contacts_marketing_90j",
+      "psi": 0.0047,
+      "ks_statistic": 0.029,
+      "ks_pvalue": 0.3697,
+      "status": "stable"
+    }
+  ]
+}

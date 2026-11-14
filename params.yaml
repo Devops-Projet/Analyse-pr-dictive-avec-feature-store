@@ -18,3 +18,10 @@ models:
   marketing:
     min_auc: 0.60
     C: 0.05
+
+monitoring:
+  reference_snapshot: "2025-10-01"
+  current_snapshot: "2026-01-01"
+  psi_warning: 0.1
+  psi_alert: 0.25
+  ks_pvalue: 0.01

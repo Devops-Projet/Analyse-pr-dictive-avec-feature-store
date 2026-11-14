@@ -115,9 +115,9 @@ stages:
       size: 91549
     - path: models/common
       hash: md5
-      md5: 360a9ba9a49ea306b2c6d4e8dd4e7ff9.dir
-      size: 31843
-      nfiles: 10
+      md5: a41a3a55c1a3ba244e31d13aaf644500.dir
+      size: 14753
+      nfiles: 6
     - path: models/credit_scoring/train.py
       hash: md5
       md5: 4d9ee585ec0706faf4d23f3ee4512a1d
@@ -133,7 +133,7 @@ stages:
     outs:
     - path: models/credit_scoring/last_run.json
       hash: md5
-      md5: 319d00bc26eef8b3afa32ce5eb44cec4
+      md5: 08e98a89bf6bbc5c2ccf0cb6d5118f4d
       size: 250
   train_marketing:
     cmd: python -m models.marketing_propensity.train
@@ -148,9 +148,9 @@ stages:
       size: 91549
     - path: models/common
       hash: md5
-      md5: 360a9ba9a49ea306b2c6d4e8dd4e7ff9.dir
-      size: 31843
-      nfiles: 10
+      md5: a41a3a55c1a3ba244e31d13aaf644500.dir
+      size: 14753
+      nfiles: 6
     - path: models/marketing_propensity/train.py
       hash: md5
       md5: 669f6ad412600d03258c926348011848
@@ -166,7 +166,7 @@ stages:
     outs:
     - path: models/marketing_propensity/last_run.json
       hash: md5
-      md5: d96be878d0eca8f5f74f10223800f168
+      md5: d04275a04d329cce9bd354e953edf012
       size: 255
   evaluate:
     cmd: python -m models.credit_scoring.evaluate && python -m 
@@ -178,7 +178,7 @@ stages:
       size: 221
     - path: models/credit_scoring/last_run.json
       hash: md5
-      md5: 319d00bc26eef8b3afa32ce5eb44cec4
+      md5: 08e98a89bf6bbc5c2ccf0cb6d5118f4d
       size: 250
     - path: models/marketing_propensity/evaluate.py
       hash: md5
@@ -186,7 +186,7 @@ stages:
       size: 227
     - path: models/marketing_propensity/last_run.json
       hash: md5
-      md5: d96be878d0eca8f5f74f10223800f168
+      md5: d04275a04d329cce9bd354e953edf012
       size: 255
     params:
       params.yaml:
@@ -195,9 +195,33 @@ stages:
     outs:
     - path: reports/credit_scoring.json
       hash: md5
-      md5: 97bf6e1ebe7775381c250244684041aa
-      size: 407
+      md5: 39592d3f6d9941369d92fbe5e9e1349d
+      size: 508
     - path: reports/marketing_propensity.json
       hash: md5
-      md5: 12e7af63cbb81a5daf3a64d52e47c08b
-      size: 411
+      md5: 14f053007451e5ee18be8d796fc086ca
+      size: 511
+  drift:
+    cmd: python -m monitoring.drift
+    deps:
+    - path: data/features/features.csv
+      hash: md5
+      md5: 6df062c911ba3243ef03be561c66a2d0
+      size: 944576
+    - path: monitoring/drift.py
+      hash: md5
+      md5: cacef685ecc729ce2e0f1958aaa1932d
+      size: 4125
+    params:
+      params.yaml:
+        monitoring:
+          reference_snapshot: '2025-10-01'
+          current_snapshot: '2026-01-01'
+          psi_warning: 0.1
+          psi_alert: 0.25
+          ks_pvalue: 0.01
+    outs:
+    - path: reports/drift.json
+      hash: md5
+      md5: 5dbe47580a38c499f45375c1dec4c315
+      size: 3335
