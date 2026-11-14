@@ -1,0 +1,7 @@
+apiVersion: 1
+providers:
+  - name: feature-store
+    folder: Feature store
+    type: file
+    options:
+      path: /var/lib/grafana/dashboards

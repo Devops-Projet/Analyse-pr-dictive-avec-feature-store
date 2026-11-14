@@ -7,6 +7,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import Engine
 
 from api.dependencies import get_engine, get_model_loader
+from api.metrics import METRICS
 from api.routers.features import naive_utc
 from api.schemas import PredictionRequest, PredictionResponse
 from feature_store.retrieval import UnknownVersionError, get_online_features
@@ -42,6 +43,7 @@ def _predict(engine: Engine, loader: ModelLoader, name: str, request: Prediction
     row = result[request.client_id]
     X = pd.DataFrame([row["features"]], columns=served.features, dtype=float)
     probability = float(served.model.predict_proba(X)[0, 1])
+    METRICS.observe_prediction(served.name, served.version, int(probability >= THRESHOLD))
     return PredictionResponse(
         client_id=request.client_id,
         model=served.name,

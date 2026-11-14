@@ -1,6 +1,6 @@
 {
   "model": "credit_scoring",
-  "candidate_version": "1",
+  "candidate_version": "4",
   "candidate_metrics": {
     "auc": 0.7354,
     "f1": 0.3607,
@@ -8,10 +8,15 @@
     "recall": 0.6286
   },
   "min_auc": 0.65,
-  "production_before": null,
-  "production_metrics_before": null,
-  "promoted": true,
-  "reason": "seuil atteint, aucune version en production",
+  "production_before": "1",
+  "production_metrics_before": {
+    "auc": 0.7354,
+    "f1": 0.3607,
+    "precision": 0.2529,
+    "recall": 0.6286
+  },
+  "promoted": false,
+  "reason": "AUC 0.7354 non sup\u00e9rieure \u00e0 la production (0.7354)",
   "production_after": "1",
   "feature_set_version": "v-6df062c911ba"
 }

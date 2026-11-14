@@ -49,6 +49,20 @@ def list_versions(engine: Engine) -> list[dict]:
         return [dict(row._mapping) for row in rows]
 
 
+def freshness(engine: Engine) -> dict | None:
+    """Date du dernier chargement et du dernier instantané de la version la plus récente."""
+    with engine.connect() as conn:
+        row = conn.execute(text("""
+                SELECT v.version, v.computed_at, max(f.event_timestamp) AS latest_snapshot
+                FROM feature_set_versions v
+                LEFT JOIN feature_values f ON f.version = v.version
+                GROUP BY v.version, v.computed_at
+                ORDER BY v.computed_at DESC
+                LIMIT 1
+                """)).first()
+    return dict(row._mapping) if row else None
+
+
 def get_online_features(
     engine: Engine,
     client_ids: list[int],

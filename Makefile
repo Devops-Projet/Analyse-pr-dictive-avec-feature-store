@@ -1,4 +1,4 @@
-.PHONY: all setup up down pipeline test lint audit lock models rollback smoke
+.PHONY: all setup up down pipeline test lint audit lock models rollback smoke monitoring
 
 export UID := $(shell id -u)
 export GID := $(shell id -g)
@@ -7,15 +7,16 @@ export IMAGE_TAG ?= $(shell git rev-parse --short HEAD 2>/dev/null || echo dev)
 
 all: up pipeline
 
-# Crée .env à partir du modèle s'il n'existe pas encore
+# Crée .env à partir du modèle, puis y ajoute les variables apparues depuis dans .env.example
 setup:
-	test -f .env || cp .env.example .env
+	@test -f .env || cp .env.example .env
+	@python3 scripts/sync_env.py
 
 up: setup
 	docker compose up -d --build --wait
 
 down:
-	docker compose down
+	docker compose --profile monitoring down
 
 # Si le registre MLflow a été vidé (docker compose down -v), DVC considère les modèles comme
 # à jour : on force alors leur réentraînement pour que l'API ait toujours un modèle à servir.
@@ -32,6 +33,10 @@ models: setup
 # Retour à la version précédente : make rollback MODEL=credit_scoring
 rollback: setup
 	docker compose run --rm pipeline python -m models.common.registry rollback $(MODEL)
+
+# Prometheus (http://localhost:9090) et Grafana (http://localhost:3000)
+monitoring: setup
+	docker compose --profile monitoring up -d --build --wait
 
 # Contrôle après déploiement sur le service démarré (voir docs/runbook.md)
 smoke: setup

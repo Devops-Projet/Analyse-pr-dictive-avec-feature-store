@@ -1,7 +1,7 @@
 {
   "model": "marketing_propensity",
-  "run_id": "a5cc0794d86a4dd9a2277358a29dd7a3",
-  "model_version": "1",
+  "run_id": "befc9a77e83d42c6b4353fb1d9955acc",
+  "model_version": "3",
   "feature_set_version": "v-6df062c911ba",
   "metrics": {
     "auc": 0.6456,

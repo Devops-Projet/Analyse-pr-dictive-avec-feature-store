@@ -10,8 +10,7 @@ Magasin centralisé de variables de machine learning, partagé par plusieurs mod
 ## État du projet
 
 En cours de construction : les données, le feature store, son API de récupération et les deux
-modèles consommateurs, leurs routes de prédiction et la CI sont en place. La supervision reste
-à réaliser.
+modèles consommateurs, leurs routes de prédiction, la CI et la supervision sont en place.
 
 ## Démarrage
 
@@ -31,6 +30,7 @@ soient prêts, puis lance le pipeline avec `dvc repro`.
 | `make test` / `make lint` | Lancer les tests ou le lint |
 | `make audit` | Rechercher un secret dans les fichiers suivis par Git |
 | `make smoke` | Contrôler le service démarré |
+| `make monitoring` | Démarrer Prometheus et Grafana |
 | `make lock` | Régénérer `requirements.lock` |
 
 | Service | Adresse |
@@ -93,8 +93,8 @@ conduite à tenir en cas d'incident sont décrits dans [docs/runbook.md](docs/ru
 
 ## Pipeline
 
-`dvc repro` enchaîne `generate → validate → build_features → load_features → train_scoring →
-train_marketing → evaluate`. `load_features` charge les variables dans PostgreSQL et est
+`dvc repro` enchaîne `generate → validate → build_features → load_features → drift →
+train_scoring → train_marketing → evaluate`. `load_features` charge les variables dans PostgreSQL et est
 relancée à chaque exécution, car DVC ne suit pas le contenu de la base. Si le registre MLflow a
 été vidé, `make pipeline` réentraîne les modèles automatiquement.
 
@@ -110,6 +110,19 @@ production que si son AUC dépasse un seuil minimal et celle de la version en pr
 | `make rollback MODEL=credit_scoring` | Remettre la version précédente en production |
 
 Voir [docs/modeles.md](docs/modeles.md) pour les modèles essayés et les résultats.
+
+## Supervision
+
+| Route | Rôle |
+|---|---|
+| `GET /health` | Le processus répond (healthcheck Docker) |
+| `GET /ready` | Store chargé et modèles en production ; `503` sinon |
+| `GET /metrics` | Métriques Prometheus : trafic, erreurs, latence, prédictions, fraîcheur |
+
+`make monitoring` démarre Prometheus (http://localhost:9090), avec 5 règles d'alerte, et
+Grafana (http://localhost:3000), avec un tableau de bord prêt à l'emploi. L'étape DVC `drift`
+mesure la dérive des variables dans `reports/drift.json`. Seuils, responsables et actions :
+[docs/runbook.md](docs/runbook.md#supervision).
 
 ## Intégration continue
 
