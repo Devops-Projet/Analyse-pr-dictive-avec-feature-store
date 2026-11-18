@@ -9,8 +9,22 @@ Magasin centralisé de variables de machine learning, partagé par plusieurs mod
 
 ## État du projet
 
-En cours de construction : les données, le feature store, son API de récupération et les deux
-modèles consommateurs, leurs routes de prédiction, la CI et la supervision sont en place.
+Fonctionnel de bout en bout : données versionnées avec DVC, feature store PostgreSQL et son API
+de récupération, deux modèles consommateurs suivis dans MLflow, routes de prédiction, CI et
+supervision. Une seule commande reconstruit l'ensemble sur une machine neuve.
+
+| Résultat | Valeur |
+|---|---|
+| Variables dans le store | 20, sur 4 instantanés (01/10/2025 au 01/01/2026) |
+| AUC en test, scoring crédit | 0,735 (plafond théorique des données : 0,782) |
+| AUC en test, propension marketing | 0,646 (plafond théorique des données : 0,790) |
+| Indicateurs DORA | [docs/dora.md](docs/dora.md) |
+
+## Architecture
+
+![Architecture](docs/architecture.png)
+
+Composants, flux et choix techniques : [docs/architecture.md](docs/architecture.md).
 
 ## Démarrage
 
@@ -31,6 +45,7 @@ soient prêts, puis lance le pipeline avec `dvc repro`.
 | `make audit` | Rechercher un secret dans les fichiers suivis par Git |
 | `make smoke` | Contrôler le service démarré |
 | `make monitoring` | Démarrer Prometheus et Grafana |
+| `make dora` | Mesurer les indicateurs DORA sur `main` |
 | `make lock` | Régénérer `requirements.lock` |
 
 | Service | Adresse |
@@ -146,9 +161,11 @@ la seed de `params.yaml`.
 ## Documentation
 
 - [Cadrage](docs/cadrage.md)
+- [Architecture](docs/architecture.md)
 - [User stories et définition de « terminé »](docs/user_stories.md)
 - [Variables partagées](docs/variables.md)
 - [Catalogue des variables](docs/feature_catalog.md)
 - [Modèles](docs/modeles.md)
 - [Procédures d'exploitation](docs/runbook.md)
+- [Indicateurs DORA](docs/dora.md)
 - [Conventions de contribution](CONTRIBUTING.md)
