@@ -48,6 +48,24 @@ format `skops` sans type à risque.
 Le seuil de décision est 0,5. Avec la pondération des classes, le modèle de scoring privilégie
 le rappel : il repère 63 % des défauts, au prix de nombreuses fausses alertes.
 
+## Plafond théorique
+
+Le générateur tire chaque cible à partir d'un facteur caché par client (`risque` pour le
+défaut, `appetence` pour la souscription), avec une part de hasard
+(`pipelines/generate_data.py`). Même un modèle qui connaîtrait ce facteur ne classerait pas
+parfaitement les clients. Son AUC, estimée par simulation sur 2 millions de tirages, donne la
+limite atteignable :
+
+| Modèle | AUC en test | Plafond théorique | Part du plafond |
+|---|---|---|---|
+| Scoring crédit | 0,735 | 0,782 | 94 % |
+| Propension marketing | 0,646 | 0,790 | 82 % |
+
+Le scoring est proche de la limite. Pour le marketing, l'écart vient des variables : le
+facteur `appetence` n'est observé qu'à travers des signaux faibles (usage de l'application,
+nombre de produits, contacts). Le gagner suppose de nouvelles variables dans le store, pas un
+autre réglage du modèle. Avec 500 clients en test, l'écart-type de l'AUC mesurée est d'environ 0,02 à 0,03.
+
 ## Suivi MLflow
 
 Chaque entraînement enregistre dans MLflow (http://localhost:5000) :
