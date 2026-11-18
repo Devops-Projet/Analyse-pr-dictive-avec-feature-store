@@ -54,8 +54,8 @@ lint: setup
 audit: setup
 	docker compose run --rm --no-deps pipeline python scripts/check_secrets.py  # pragma: allowlist secret
 
-# Données versionnées sur le remote DVC (DagsHub). La lecture est publique ;
-# l'envoi demande les identifiants dans .dvc/config.local (voir README, section Données).
+# Données versionnées sur le remote DVC (DagsHub). Lecture et envoi demandent un jeton
+# DagsHub dans .dvc/config.local (voir README, section Données).
 data-pull: setup
 	docker compose run --rm --no-deps pipeline dvc pull
 
