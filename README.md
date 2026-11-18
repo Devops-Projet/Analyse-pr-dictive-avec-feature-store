@@ -20,6 +20,34 @@ supervision. Une seule commande reconstruit l'ensemble sur une machine neuve.
 | AUC en test, propension marketing | 0,646 (plafond théorique des données : 0,790) |
 | Indicateurs DORA | [docs/dora.md](docs/dora.md) |
 
+## Aperçu
+
+Captures prises le 18/11/2026 sur une machine vidée (`docker compose down -v`), après
+`make all` et `make monitoring`.
+
+**Test local :** reconstruction complète en 1 min 48 s, contrôle après déploiement et tests.
+
+![Test local](docs/captures/test_local.png)
+
+**API :** documentation OpenAPI et prédiction du scoring pour le client 42.
+
+![Swagger](docs/captures/swagger.jpg)
+
+![Prédiction](docs/captures/prediction.png)
+
+**MLflow :** exécution d'entraînement (métriques, paramètres, version du feature set) et règle
+de promotion : la version 2, d'AUC identique, n'a pas remplacé la version 1 en production.
+
+![Exécution MLflow](docs/captures/mlflow_run.png)
+
+![Registre MLflow](docs/captures/mlflow_promotion.png)
+
+**Supervision :** tableau de bord Grafana et règles d'alerte Prometheus.
+
+![Grafana](docs/captures/grafana.jpg)
+
+![Alertes Prometheus](docs/captures/prometheus_alertes.jpg)
+
 ## Architecture
 
 ![Architecture](docs/architecture.png)
