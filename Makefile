@@ -1,4 +1,4 @@
-.PHONY: all setup up down pipeline test lint audit lock models rollback smoke monitoring
+.PHONY: all setup up down pipeline test lint audit lock models rollback smoke monitoring dora
 
 export UID := $(shell id -u)
 export GID := $(shell id -g)
@@ -53,6 +53,10 @@ lint: setup
 # Échoue si un mot de passe ou une clé est détecté dans les fichiers suivis par Git
 audit: setup
 	docker compose run --rm --no-deps pipeline python scripts/check_secrets.py  # pragma: allowlist secret
+
+# Indicateurs DORA mesurés sur l'historique de main (voir docs/dora.md)
+dora:
+	git fetch -q origin main && python3 scripts/dora.py origin/main
 
 # Régénère requirements.lock dans le même Python que les images
 lock:
