@@ -48,6 +48,13 @@ de promotion : la version 2, d'AUC identique, n'a pas remplacé la version 1 en 
 
 ![Alertes Prometheus](docs/captures/prometheus_alertes.jpg)
 
+**Livraison :** exécution de la CI après une fusion dans `main` (3 jobs réussis) et tableau
+Kanban du projet.
+
+![CI](docs/captures/ci_jobs.png)
+
+![Kanban](docs/captures/kanban.png)
+
 ## Architecture
 
 ![Architecture](docs/architecture.png)
