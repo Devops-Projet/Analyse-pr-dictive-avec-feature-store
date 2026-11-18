@@ -154,9 +154,27 @@ commit (`IMAGE_TAG`), ce qui permet d'identifier la version déployée.
 
 ## Données
 
-Le pipeline écrit dans `data/`, qui est ignoré par Git. Aucun remote DVC n'est configuré pour
-l'instant : les données synthétiques sont régénérées à l'identique par `dvc repro`, grâce à
-la seed de `params.yaml`.
+Le pipeline écrit dans `data/`, qui est ignoré par Git et suivi par DVC. Les données brutes, le
+rapport de validation et `features.csv` sont stockés sur le remote DVC public
+[dagshub.com/hichamouaouche/bank-feature-store](https://dagshub.com/hichamouaouche/bank-feature-store) :
+
+```bash
+make data-pull   # récupérer les données de la version de dvc.lock (sans compte)
+```
+
+Sans le remote, `dvc repro` régénère les mêmes données grâce à la seed de `params.yaml`.
+
+Pour envoyer une nouvelle version (`make data-push`), chaque développeur enregistre ses
+identifiants DagsHub dans `.dvc/config.local`, qui n'est jamais commité :
+
+```bash
+docker compose run --rm --no-deps pipeline sh -c "\
+  dvc remote modify origin --local auth basic && \
+  dvc remote modify origin --local user <utilisateur-dagshub> && \
+  dvc remote modify origin --local password <jeton-dagshub>"
+```
+
+Le jeton se crée dans DagsHub : *User Settings → Tokens*.
 
 ## Documentation
 
