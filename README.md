@@ -53,6 +53,22 @@ soient prêts, puis lance le pipeline avec `dvc repro`.
 | API | http://localhost:8000/health |
 | MLflow | http://localhost:5000 |
 
+## Variables d'environnement
+
+`make setup` (appelé par toutes les commandes) crée `.env` à partir de `.env.example` et y
+ajoute les variables manquantes. `.env` n'est jamais commité. Le service refuse de démarrer si
+une variable obligatoire manque.
+
+| Variable | Rôle | Valeur par défaut |
+|---|---|---|
+| `POSTGRES_HOST`, `POSTGRES_PORT` | Adresse de PostgreSQL | `postgres`, `5432` |
+| `POSTGRES_DB`, `POSTGRES_USER` | Base et utilisateur du feature store | `feature_store` |
+| `POSTGRES_PASSWORD` | Mot de passe PostgreSQL (à changer) | `changeme` |
+| `MLFLOW_TRACKING_URI`, `MLFLOW_PORT` | Adresse et port de MLflow | `http://mlflow:5000`, `5000` |
+| `API_PORT` | Port de l'API sur la machine | `8000` |
+| `PROMETHEUS_PORT`, `GRAFANA_PORT` | Ports de la supervision | `9090`, `3000` |
+| `GRAFANA_ADMIN_PASSWORD` | Mot de passe du compte `admin` de Grafana (à changer) | `changeme` |
+
 ## API de récupération
 
 Documentation interactive : http://localhost:8000/docs
@@ -176,6 +192,18 @@ make data-push   # envoyer une nouvelle version (droit d'écriture sur le dépô
 
 Sans accès au remote, `make all` régénère les mêmes données grâce à la seed de `params.yaml` :
 le fichier `features.csv` obtenu a la même empreinte que celle de `dvc.lock`.
+
+## Limites connues
+
+- Données synthétiques : les performances des modèles ne préjugent pas d'un cas réel
+  (voir le plafond théorique dans [docs/modeles.md](docs/modeles.md)).
+- `revenu_mensuel`, `nb_produits_detenus` et `utilise_app_mobile` n'ont pas d'historique : même
+  valeur à chaque instantané.
+- Calcul par lots mensuels ; pas de store en ligne à faible latence (Redis) ni d'orchestrateur.
+- Les alertes sont visibles dans Prometheus mais ne sont envoyées ni par e-mail ni par messagerie.
+- Déploiement local avec Docker Compose, sur une seule machine.
+- Le remote DVC demande un jeton DagsHub, même en lecture ; sans lui, les données sont
+  régénérées à l'identique.
 
 ## Documentation
 
